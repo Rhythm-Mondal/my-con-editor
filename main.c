@@ -15,9 +15,9 @@ void enableRawMode(){
     atexit(disableRawMode);
 
     struct termios raw = default_termios;
-    raw.c_iflag &= ~(ICRNL|IXON);
-    raw.c_lflag &= ~(ECHO|ICANON|ISIG|IEXTEN);
-    raw.c_oflag &= ~(OPOST);
+    raw.c_iflag &= ~(ICRNL|IXON);  // ICRNL = ctrl-m, IXON = ctrl-s & ctrl-q 
+    raw.c_lflag &= ~(ECHO|ICANON|ISIG|IEXTEN);  // ECHO = console echo, ISIG = ctrl-z & ctrl-c, ICANON = read bytes, IEXTEN = ctrl-v
+    raw.c_oflag &= ~(OPOST);  // OPOST = cursor reposition on new line
     tcsetattr(STDERR_FILENO, TCSAFLUSH, &raw);
 }
 
