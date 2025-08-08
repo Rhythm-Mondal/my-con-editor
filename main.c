@@ -18,9 +18,11 @@ void enableRawMode(){
     raw.c_iflag &= ~(ICRNL|IXON);  // ICRNL = ctrl-m, IXON = ctrl-s & ctrl-q 
     raw.c_lflag &= ~(ECHO|ICANON|ISIG|IEXTEN);  // ECHO = console echo, ISIG = ctrl-z & ctrl-c, ICANON = read bytes, IEXTEN = ctrl-v
     raw.c_oflag &= ~(OPOST);  // OPOST = cursor reposition on new line
+    raw.c_cc[VMIN] = 0;
+    raw.c_cc[VTIME] = 1;
 
-    // raw.c_iflag &= ~(BRKINT|INPCK|ISTRIP);  // Legacy
-    // raw.c_cflag |= ~(CS8);  // Legacy
+    raw.c_iflag &= ~(BRKINT|INPCK|ISTRIP);  // Legacy
+    raw.c_cflag |= ~(CS8);  // Legacy
     tcsetattr(STDERR_FILENO, TCSAFLUSH, &raw);
 }
 
