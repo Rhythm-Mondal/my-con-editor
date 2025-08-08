@@ -1,3 +1,4 @@
+#include <errno.h>
 #include <ctype.h>
 #include <stdio.h>
 #include <stdlib.h>
@@ -12,11 +13,11 @@ void die(const char *s){
 }
 
 void disableRawMode(){
-    tcsetattr(STDERR_FILENO, TCSAFLUSH, &default_termios);
+    if (tcsetattr(STDERR_FILENO, TCSAFLUSH, &default_termios) == -1) die("tcsetattr");
 }
 
 void enableRawMode(){
-    tcgetattr(STDERR_FILENO, &default_termios);
+    if (tcgetattr(STDERR_FILENO, &default_termios) == -1) die("tcgetattr");
     atexit(disableRawMode);
 
     struct termios raw = default_termios;
@@ -28,20 +29,14 @@ void enableRawMode(){
 
     raw.c_iflag &= ~(BRKINT|INPCK|ISTRIP);  // Legacy
     raw.c_cflag |= ~(CS8);  // Legacy
-    tcsetattr(STDERR_FILENO, TCSAFLUSH, &raw);
+    if (tcsetattr(STDERR_FILENO, TCSAFLUSH, &raw) == -1) die("tcsetattr");
 }
 
 int main(){
     enableRawMode();
-    // printf("write somethign doc!\n");
-    // char c;
-    // while (read(STDIN_FILENO, &c, 1) == 1 && c != 'q'){
-    //     if iscntrl(c) printf("%d\r\n", c);
-    //     else printf("%d ('%c')\r\n", c, c);
-    // }
     while(1){
         char c = '\0';
-        read(STDIN_FILENO, &c, 1);
+        if (read(STDIN_FILENO, &c, 1) == -1 && errno != EAGAIN) die("read");
         if(iscntrl(c)) printf("%d\r\n", c);
         else printf("%d ('%c')\r\n", c, c);
         if (c=='q') break;
