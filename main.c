@@ -16,7 +16,7 @@ void enableRawMode(){
 
     struct termios raw = default_termios;
     raw.c_iflag &= ~(IXON);
-    raw.c_lflag &= ~(ECHO|ICANON|ISIG);
+    raw.c_lflag &= ~(ECHO|ICANON|ISIG|IEXTEN);
     tcsetattr(STDERR_FILENO, TCSAFLUSH, &raw);
 }
 
