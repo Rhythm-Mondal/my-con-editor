@@ -6,6 +6,11 @@
 
 struct termios default_termios;
 
+void die(const char *s){
+    perror(s);
+    exit(1);
+}
+
 void disableRawMode(){
     tcsetattr(STDERR_FILENO, TCSAFLUSH, &default_termios);
 }
@@ -28,11 +33,18 @@ void enableRawMode(){
 
 int main(){
     enableRawMode();
-    printf("write somethign doc!\n");
-    char c;
-    while (read(STDIN_FILENO, &c, 1) == 1 && c != 'q'){
-        if iscntrl(c) printf("%d\r\n", c);
+    // printf("write somethign doc!\n");
+    // char c;
+    // while (read(STDIN_FILENO, &c, 1) == 1 && c != 'q'){
+    //     if iscntrl(c) printf("%d\r\n", c);
+    //     else printf("%d ('%c')\r\n", c, c);
+    // }
+    while(1){
+        char c = '\0';
+        read(STDIN_FILENO, &c, 1);
+        if(iscntrl(c)) printf("%d\r\n", c);
         else printf("%d ('%c')\r\n", c, c);
+        if (c=='q') break;
     }
     return 0;
 }
